@@ -4,7 +4,7 @@ The main objective is to help the user assessing all the 5 aspects of data recor
 Users will also find a series of suggestions to overcome each step with R functions, web services, fields to consider, bibliographic references of methods, etc. By selecting each of the scenarios the user will see how them affect to information certainty and data coverage.
 Following the ideas of Meyer et al. 2016, some steps that reduce uncertainty imply decreases of data availability and viceversa. The user has to consider this trade off to choose the final filters
 
-#**INSTRUCTIONS**
+**INSTRUCTIONS**
 1. Choose any dimension of the 5 available in the left panel (see flowchart below).
 2. Select filters / steps in left-upper box (there are no previous selections marked).
 3. Check "Pros / Cons" table that will display with each selection in the right-upper box (left panel).
