@@ -1,0 +1,65 @@
+Process;Methods / Tools;geo_prev_filter;coords;no_coords;distr_env;bor;dup_position;dup_time;dup_recorder;temp;temp_level;temp_range;download_tax;taxonomic_db;prev_tax;query_tax
+1. Check and filter based on coordinates precision. Choose and option:;Use fields like dwc::coordinatePrecision;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0
+;‘bdc::bdc_coordinates_precision’ [18];0;2;0;0;0;0;0;0;0;0;0;0;0;0;0
+2.Check coordinates value and do not validate records if any of these conditions are true.;‘CoordinateCleaner::cc_equ’ [17];0;3;0;0;0;0;0;0;0;0;0;0;0;0;0
+;"Ranges: Latitude > 90/-90 and Longitude > 180/-180
+Use ‘bdc::bdc_coordinates_outOfRange’ [18] or
+CoordinateCleaner::cc_val’ [17]";0;4;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Use ‘CoordinateCleaner::cc_zero’ [17];0;5;0;0;0;0;0;0;0;0;0;0;0;0;0
+a. Are coordinates placed in correct habitat (sea / land)?;‘CoordinateCleaner::cc_sea’ [17];0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
+;‘bdc::bdc_coordinates_country_inconsistent’ [18] ;0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Point in polygon analysis over study area shapefile.;0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
+b. Are coordinates placed in the country assigned?;‘bdc::bdc_country_from_coordinates’ and ‘bdc::bdc_country_standardized’[18];0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
+;‘CoordinateCleaner::cc_coun’ [17];0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Point in polygon analysis using countries shapefile from GADM.;0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
+c. Check position of records that are not placed in the country assigned.;Check country borders (‘plantR:: checkBorders’);0;8;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Switch coordinates and validate ‘bcd::bdc_coordinates_transposed’;0;8;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Change sign of latitude and/or longitude and validate [1];0;8;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Check if has locality description and retrieve coordinates with gazeteers.;0;8;0;0;0;0;0;0;0;0;0;0;0;0;0
+d. Check records placed in prime meridian or equator countries;Downscale to regional / state / province / locality administrative unit and check location with point in polygon analysis.;0;9;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Change sign of longitude in countries nearby longitude = 0.;0;9;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Change sign of latitude in countries nearby Equator.;0;9;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Switch coordinates and validate ‘bcd::bdc_coordinates_transposed’;0;9;0;0;0;0;0;0;0;0;0;0;0;0;0
+e. Delete or label as potential errors those records whose coordinates are centroids of:;"Country or capital
+‘CoordinateCleaner::cc_cap’
+‘CoordinateCleaner::cc_cen’ [17]";0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;"Grid
+Check collection methods to identify if records were collected following a study sample grid.";0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;"Locality or Province
+Match and filter records using coordinates from GeoNames or gazeteers.";0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;‘plantR::validateLoc’ [21];0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;"Geographic collector places 
+‘CoordinateCleaner::cc_inst’";0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;‘CoordinateCleaner::cc_urb’ [17];0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;‘CoordinateCleaner::cc_gbif’ ;0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+a. Retrieve coordinates indicated in other formats from other fields as locality information.;biogeo::dmsparse’ + ‘biogeo::dms2dd’ [19] to obtain decimal coordinates from degrees.;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0
+b.  Use locality information or position description to generate coordinates.;Retrieve centroid coordinates from gazeteers using locality name.;0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+;Retrieve coordinates manually from GoogleEarth / Google Maps or using ‘biogeo::fromGEarth’ [19];0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+;‘bdc::bdc_coordinates_from_locality’ [18];0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+Are coordinates placed in the species native range / extent of presence?;Point in polygon analysis using native map shapefiles.;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0
+;‘CoordinateCleaner::cc_iucn’ ;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0
+;‘CoordinateCleaner::cc_outl’ [17];0;0;0;1;0;0;0;0;0;0;0;0;0;0;0
+Does country name match with their native region?;String match of fields information (Country or smaller administrative unit);0;0;0;2;0;0;0;0;0;0;0;0;0;0;0
+a) Calculate environmental centroids for the species and validate outliers.;See method in Vandepitte et al 2022;0;0;0;4;0;0;0;0;0;0;0;0;0;0;0
+b. Calculate environmental space for species and check overlaps and delete outliers.;See method in Chapman 2005, Robertson et al. 2016 and Serra-Diaz et al. 2017 ;0;0;0;5;0;0;0;0;0;0;0;0;0;0;0
+c. Overlap environmental information by geographical position and filter occurrences by threshold.;Apply point in polygon analysis using raster or shapefiles of environmental variables.;0;0;0;6;0;0;0;0;0;0;0;0;0;0;0
+Cell;a. Cell: ‘biogeo::duplicatesexclude’ [19] ;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0
+;Create a grid of the study area adapted to cell size needed [11];0;0;0;0;0;1;0;0;0;0;0;0;0;0;0
+Coordinates + Buffer or rounded coordinates ;a. Consider presicion of coordinates with ModestR (query by input number of decimals);0;0;0;0;0;2;0;0;0;0;0;0;0;0;0
+;Rounded coordinates decimals and delete based on these values (e.g. 2 decimals) [9] [10];0;0;0;0;0;2;0;0;0;0;0;0;0;0;0
+;Proximity distance between records buffer (e.g. 0.25º) [7];0;0;0;0;0;2;0;0;0;0;0;0;0;0;0
+Coordinates;a. Use ‘CoordinateCleaner::cc_dupl’ and and 'latitude' and 'longitude' fields [17];0;0;0;0;0;3;0;0;0;0;0;0;0;0;0
+Date (DD/MM/YYYY);b. Add date to ‘CoordinateCleaner::cc_dupl’ [17];0;0;0;0;0;0;1;0;0;0;0;0;0;0;0
+Year;b. Add year to ‘CoordinateCleaner::cc_dupl’ [17];0;0;0;0;0;0;2;0;0;0;0;0;0;0;0
+Recorder Name: TRUE;c. Recorder's name: OpenRefine offers a way to correct and merge similar names.;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
+Checklist Type automatic;"Taxonomic Name Resolution Service (TNRS); WorldFlora, GBIF backbone name parser, ‘bdc::bdc_query_names_taxadb’ [18]";0;0;0;0;0;0;0;0;0;0;0;0;2;0;0
+Spatial coverage global;"e.g. GBIF backbone name parser; Taxonomic Name Resolution Service; WorldFlora";0;0;0;0;0;0;0;0;0;0;0;0;3;0;0
+Taxon. Coverage general;"e.g. GBIF backbone name parser rgbif; Global Name Resolver web service";0;0;0;0;0;0;0;0;0;0;0;0;5;0;0
+Taxon. Coverage specific;"e.g. Plants: taxonStand; WorldFlora; TNRS: taxize/taxizedb";0;0;0;0;0;0;0;0;0;0;0;0;6;0;0
+Type of matching fuzzy;"Match taxon names that differ by some characters [12] using orthographic distanced metrics (e.g. TNRS).
+User-specified score value of orthographic distance as threshold of matching.
+";0;0;0;0;0;0;0;0;0;0;0;0;7;0;0
+;‘bdc::bdc_query_names_taxadb’ suggest_names = TRUE [18];0;0;0;0;0;0;0;0;0;0;0;0;7;0;0
+Type of matching exact;Match taxon names with the exact same spelling [12] (e.g. Taxonstand based on The Plant List);0;0;0;0;0;0;0;0;0;0;0;0;8;0;0
+;‘bdc::bdc_query_names_taxadb’ suggest_names = FALSE [18];0;0;0;0;0;0;0;0;0;0;0;0;8;0;0
+Does the scientific name have authorship information? ;‘bdc::bdc_clean_names’ [18];0;0;0;0;0;0;0;0;0;0;0;0;0;2;0
