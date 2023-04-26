@@ -1,0 +1,146 @@
+Process;Pros;Cons;geo_prev_filter;coords;no_coords;distr_env;bor;dup_position;dup_time;dup_recorder;temp;temp_level;temp_range;download_tax;taxonomic_db;prev_tax;query_tax
+Only records 'without known coordinate issues';Easier cleaning process.;Exclude georeferenciable records by locality information that could be repaired. ;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Reduce time of manipulation. ;Some ‘coordinates issues’ are too strict (e.g. 'assign datum WGS84').;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Need basic geographical check and validation.;;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+Only records with coordinates filtered by spatial extent (area or administrative units);Depending on the selected area can exclude unreliable records (e.g. zero coordinates, sea points, etc.);Exclude records from suitable/native regions not considered by bibliography.;2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Exclude records from introduced distribution areas.;Exclude georeferenciable records by locality information that could be repaired. ;2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Less time of manipulation than download all available records with coordinates.;;2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;More information available including records labelled as 'with coordinates issues'.;;2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+Only records with coordinates;More information available including records labelled as 'with coordinates issues' and records with geographical information that can be repaired (e.g. zero coordinates, sea points, etc.);Check and validation processes are needed due to coordinates issues.;3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Less time of processing than download all available records with no filters.;Exclude georeferenciable records by locality information that could be repaired. ;3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;;May include records of introduced areas.;3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+All records available.;Include all the available information.;Needs an exhaustive process of filtering, cleaning and repairing the data.;4;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Records without coordinates but locality information can be retrieved and repaired.;Larger time of manipulation.;4;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+1. Check and filter based on coordinates precision. Choose and option:;Led to filter records with the highest precision on geographical position.;This information is usually not included. ;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Better solution to consider coordinates precision when this information is not provided.;Increase time of manipulation.;0;2;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Keep same criteria to filter records avoiding errors in field of coordinates precision.;;0;2;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Discard records with low geographical precision and potential location errors.;;0;2;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Less restrictive.;Increase geographical uncertainty.;0;3;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Increase number of records when a few are available.;Include records far from original location.;0;3;0;0;0;0;0;0;0;0;0;0;0;0;0
+2.Check coordinates value and do not validate records if any of these conditions are true.;Exclude unreliable records;Reduce available information that can be repaired manually using locality information.;0;4;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Label records and correct manually coordinates using locality information.;Include unreliable records;0;5;0;0;0;0;0;0;0;0;0;0;0;0;0
+a. Are coordinates placed in correct habitat (sea / land)?;Exclude unreliable records.;Reduce available information that can be repaired manually using locality information.;0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Label records placed out of their habitat and calculate distance from coastline. ;;0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Correct coordinates values placed nearby the country assigned at certain distance. (Use ‘plantR::checkShore’);;0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
+b. Are coordinates placed in the country assigned?;Identify location errors due to signs of coordinates.;Misidentification of country names due to errors of collector input.;0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Exclude unreliable records.;Records located nearby country borders and low precision can be deleted.;0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
+c. Check position of records that are not placed in the country assigned.;Identify location errors due to signs of coordinates.;Increase time of manipulation.;0;8;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Identify records located nearby country borders.;;0;8;0;0;0;0;0;0;0;0;0;0;0;0;0
+d. Check records placed in prime meridian or equator countries;Identify location errors at a finer resolution due to signs errors in coordinates.;Increase time of manipulation.;0;9;0;0;0;0;0;0;0;0;0;0;0;0;0
+;;Needs regional name string information to match names.;0;9;0;0;0;0;0;0;0;0;0;0;0;0;0
+e. Delete or label as potential errors those records whose coordinates are centroids of:;Identify potential error of location.;Reduce available information that can be repaired manually using locality information.;0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Help to discard records with geographical uncertainty.;Increase time of manipulation.;0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Detect locality or province centroids may be a highly strict filter, recommended in regional local studies.;;0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Exclude records from places that contains captured/cultivated specimens and wrong references to GBIF institution.;;0;10;0;0;0;0;0;0;0;0;0;0;0;0;0
+f. Skip this step;Increase number of records when a few are available.;Include unreliable records increasing geographical uncertainty.;0;11;0;0;0;0;0;0;0;0;0;0;0;0;0
+a. Retrieve coordinates indicated in other formats from other fields as locality information.;Increase number of records when a few are available.;Increase time of manipulation.;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0
+;Feasible with small datasets.;Semi-automatic/manual check through dataset to find degrees’ information.;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0
+;;Not recommended for large datasets.;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0
+b.  Use locality information or position description to generate coordinates.;Increase number of records when a few are available.;Increase time of manipulation.;0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+;Feasible with small datasets.;Locality centroids present low precision generating uncertainty.;0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+;Useful for studies that analyse higher administrative units than those used to retrieve centroids. ;Locality names are not standardized and can be written in multiple languages to translate.;0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+;;Mismatch of localities with same name in different locations leading into misidentification of coordinates.;0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+;;Do not apply if records with coordinates placed in centroids were deleted in step 3.;0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+;;Not recommended for large datasets.;0;0;2;0;0;0;0;0;0;0;0;0;0;0;0
+c. Do not correct coordinate values;Avoid assign centroids or coordinates low precise that add uncertainty.;Discard multiple records when a few are available.;0;0;3;0;0;0;0;0;0;0;0;0;0;0;0
+Are coordinates placed in the species native range / extent of presence?;Identify and exclude species misidentifications. ;Exclude records due to incorrect maps, natural changes in geographic distribution or introduced areas.;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0
+;Keep only records located in the native region of the species.;May be too restrictive.;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0
+;;Increase time of manipulation.;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0
+;;Administrative unit names can change through time.;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0
+Does country name match with their native region?;Identify and exclude species misidentifications. ;Exclude records due to incorrect maps, natural changes in geographic distribution or introduced areas.;0;0;0;2;0;0;0;0;0;0;0;0;0;0;0
+;Keep only records located in the native region of the species.;May be too restrictive.;0;0;0;2;0;0;0;0;0;0;0;0;0;0;0
+;;Increase time of manipulation.;0;0;0;2;0;0;0;0;0;0;0;0;0;0;0
+;;Administrative unit names can change through time.;0;0;0;2;0;0;0;0;0;0;0;0;0;0;0
+Do not use distributional info for filter;Less restrictive.;Include misidentifications.;0;0;0;3;0;0;0;0;0;0;0;0;0;0;0
+;Keep records located out of the native region of the species.;;0;0;0;3;0;0;0;0;0;0;0;0;0;0;0
+;Include information of new locations not referenced in bibliography.;;0;0;0;3;0;0;0;0;0;0;0;0;0;0;0
+a) Calculate environmental centroids for the species and validate outliers.;Helps identifying and excluding species misidentifications. ;May be too restrictive.;0;0;0;4;0;0;0;0;0;0;0;0;0;0;0
+;;Increase time of manipulation.;0;0;0;4;0;0;0;0;0;0;0;0;0;0;0
+;;Needs high detailed environmental information to establish threshold.;0;0;0;4;0;0;0;0;0;0;0;0;0;0;0
+b. Calculate environmental space for species and check overlaps and delete outliers.;Helps identifying and excluding species misidentifications. ;May be too restrictive.;0;0;0;5;0;0;0;0;0;0;0;0;0;0;0
+;;Increase time of manipulation.;0;0;0;5;0;0;0;0;0;0;0;0;0;0;0
+;;Needs high detailed environmental information to establish threshold.;0;0;0;5;0;0;0;0;0;0;0;0;0;0;0
+c. Overlap environmental information by geographical position and filter occurrences by threshold.;Helps identifying and excluding species misidentifications. ;May be too restrictive.;0;0;0;6;0;0;0;0;0;0;0;0;0;0;0
+;;Increase time of manipulation.;0;0;0;6;0;0;0;0;0;0;0;0;0;0;0
+;;Needs high detailed environmental information to establish threshold.;0;0;0;6;0;0;0;0;0;0;0;0;0;0;0
+d. Do not apply a filter for environmental outliers;Less restrictive.;Dataset may include misidentifications.;0;0;0;7;0;0;0;0;0;0;0;0;0;0;0
+;Include information of new locations not referenced in bibliography.;;0;0;0;7;0;0;0;0;0;0;0;0;0;0;0
+Don't filter by Basis of Record;Include machine observations, literature records, material sample or unknown basis of records.;Include fossil species.;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0
+;Keep all the available information for afterwards filters.;Records with an unknown nature of collection are less reliable.;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0
+;;Needs more filter/clean processing, increasing time of manipulation. ;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0
+Preserved Specimens;Allow material revision for correct and update taxonomic identification [2][5];May include coordinates of museums, institutions, etc. instead of the real coordinates of collection [1] or administrative units [5];0;0;0;0;2;0;0;0;0;0;0;0;0;0;0
+;Include rarer species than observations [2];They are usually older than observations with more unreliability associated to them [2][3];0;0;0;0;2;0;0;0;0;0;0;0;0;0;0
+;High reliable records usually collected by experts and researchers [5].;Associated to small sample sizes [2];0;0;0;0;2;0;0;0;0;0;0;0;0;0;0
+Observations;Associated to recent data [2][3];Less reliable for misidentifications [5] due to collection from amateurs.;0;0;0;0;3;0;0;0;0;0;0;0;0;0;0
+;Higher number of records available [2][3];They usually correspond to common species [2] and easily to observe and identify taxa [4];0;0;0;0;3;0;0;0;0;0;0;0;0;0;0
+;Wider geographical range [2];May include records outside of their species range (invasive, domestic, horticultural or introduced species) [2];0;0;0;0;3;0;0;0;0;0;0;0;0;0;0
+;More geographical precision (usually take with GPS) [5].;Biased toward human areas [3][4];0;0;0;0;3;0;0;0;0;0;0;0;0;0;0
+Preserved Specimens and Observations;Combination of data types increase temporal, spatial, taxonomical and environmental coverage [2];May include records outside of their species range (invasive, domestic, horticultural or introduced species) [2];0;0;0;0;4;0;0;0;0;0;0;0;0;0;0
+;;May include coordinates of museums, institutions, etc. instead of the real coordinates of collection [1] or administrative units [5] .;0;0;0;0;4;0;0;0;0;0;0;0;0;0;0
+Cell;Consider coordinates precision. ;Delete false duplicates.;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0
+;Useful for species distribution models.;;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0
+Coordinates + Buffer or rounded coordinates ;Consider coordinates precision.;Delete false duplicates.;0;0;0;0;0;2;0;0;0;0;0;0;0;0;0
+;Useful for aggregated records in oversampled areas.;;0;0;0;0;0;2;0;0;0;0;0;0;0;0;0
+Coordinates;Minimum information usually available.;Do not consider coordinates precision.;0;0;0;0;0;3;0;0;0;0;0;0;0;0;0
+;;Errors detecting real duplicates when multiple vouchers of the same specimen were georeferenced using different methods.;0;0;0;0;0;3;0;0;0;0;0;0;0;0;0
+Date (DD/MM/YYYY);More precise than using only year of collection.;Omitting information of records without temporal information.;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0
+;Accept other combination using information of month and year of collection (MM/YYYY) [7];;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0
+Year;Year description appears more often than complete date.;Delete occurrences recorded the same year but not in the same sample moment.;0;0;0;0;0;0;2;0;0;0;0;0;0;0;0
+No info;Use when there are a few records available and they lack date of collection.;Errors detecting real duplicates.;0;0;0;0;0;0;3;0;0;0;0;0;0;0;0
+Recorder Name: TRUE;Consider recorder name is highly strict but precise detecting duplicates.;Collector's name is usually not indicated. ;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
+;;The field is not standardized [7];0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
+;;Include different types of collectors and quality associated to identification: taxonomists > experts > amateurs [20];0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
+a. Complete date of collection ;Highest precision of record’s temporal coverage.;Many records are not linked with the day and/or month of collection.;0;0;0;0;0;0;0;0;2;2;0;0;0;0;0
+;Help to detect duplicate records by complete date of collection. ;Format date can include DD/MM or MM/DD generating unreliable information.;0;0;0;0;0;0;0;0;2;2;0;0;0;0;0
+;Allow seasonal-temporal analyses of records.;;0;0;0;0;0;0;0;0;2;2;0;0;0;0;0
+b. At least year of collection;Help to detect duplicate records by year of collection.;Limited information for taxa with few records available.;0;0;0;0;0;0;0;0;2;1;0;0;0;0;0
+;Avoid old records (less reliable and lower uncertainty) [5, 6] and/or current year with lag of information.;Discard large proportion of records due to absence in year of collection. [7];0;0;0;0;0;0;0;0;2;1;0;0;0;0;0
+;;Duplicate records based only on the year of collection led to discard different sample events from the same year.;0;0;0;0;0;0;0;0;2;1;0;0;0;0;0
+Set range of information TRUE;Allow to filter and adjust pool of records to other variables (e.g. climate) [5] representing the same temporal range and then more realistic results [6];Particular temporal ranges can be affected by biases between record types [2] ;0;0;0;0;0;0;0;0;2;0;1;0;0;0;0
+;;Can generate bias between regions due to different temporal coverage of samples of the areas [7, 8].;0;0;0;0;0;0;0;0;2;0;1;0;0;0;0
+;;Exclude some useful information (out of the temporal range) for geographical and taxonomical analysis.;0;0;0;0;0;0;0;0;2;0;1;0;0;0;0
+Set range of information FALSE;Include the longest temporal coverage of data that it is useful in studies of changes over time [6].;Include old data that are less reliable and have more uncertainty [5, 8] and current year with lag of information.;0;0;0;0;0;0;0;0;2;0;2;0;0;0;0
+;;Older data present lower quality due to changes in ecological, demographic or dispersal processes and taxonomic changes or status [6, 8];0;0;0;0;0;0;0;0;2;0;2;0;0;0;0
+;;Older data loss information content of the record [6];0;0;0;0;0;0;0;0;2;0;2;0;0;0;0
+;;Older records lack location precision [5] and could use outdated methodologies [6];0;0;0;0;0;0;0;0;2;0;2;0;0;0;0
+;;Make unrealistic comparisons of presence records and environmental information that did not coexist in time generating commission errors  [6];0;0;0;0;0;0;0;0;2;0;2;0;0;0;0
+No temporal filter ;Have all the information available to filter afterwards. ;Needs more filter/clean processing, increasing time of manipulation. ;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0
+;Can retrieve temporal information from metadata of datasets.;Duplicate records are difficult to detect without date information.;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0
+;;May include illegitimate dates [17] (e.g. before 1600 or after current year).;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0
+;;Older data present less quality due to changes in ecological, demographic or dispersal processes and taxonomic changes or status [6];0;0;0;0;0;0;0;0;1;0;0;0;0;0;0
+;;Older data lose information content of the record [6];0;0;0;0;0;0;0;0;1;0;0;0;0;0;0
+;;Older records lack location precision [5] and could use outdated methodologies [6];0;0;0;0;0;0;0;0;1;0;0;0;0;0;0
+;;Make unrealistic comparisons of presence records and environmental information that did not coexist in time generating commission errors  [6];0;0;0;0;0;0;0;0;1;0;0;0;0;0;0
+Download all records from higher taxonomic level;Have all the information available to make multiple filters afterwards.;Clean and filter process is needed afterwards due to records without proper taxonomical rank.;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0
+;;Increase time of manipulation.;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0
+Create a list of species (accepted names and synonyms) from previous taxonomical knowledge and query databases.;Avoid records without proper taxonomic rank.;Mismatch between taxonomic checklist concepts choose and taxonomical source used in records’ database can led to partial/erroneous downloads.;0;0;0;0;0;0;0;0;0;0;0;2;0;0;0
+;Helps to query different databases with the same standardized names considering the synonyms and variations.;Needs reliable sources of taxonomical information to include all taxa (accepted names and synonyms).;0;0;0;0;0;0;0;0;0;0;0;2;0;0;0
+;Include authorship name to avoid mismatches of scientific names from different taxa with the same name.;;0;0;0;0;0;0;0;0;0;0;0;2;0;0;0
+Checklist Type manual;For small dataset.;Increase processing time. ;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0
+;Supervised outputs. ;;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0
+Checklist Type automatic;For large datasets. ;Increase errors associated to unsupervised outputs.;0;0;0;0;0;0;0;0;0;0;0;0;2;0;0
+;Reduce processing time.;;0;0;0;0;0;0;0;0;0;0;0;0;2;0;0
+Spatial coverage global;Appropriate for large scale studies with multiple regions included.;Limited information when regional taxonomic concepts have conflicts.;0;0;0;0;0;0;0;0;0;0;0;0;3;0;0
+Spatial coverage regional;Appropriate for regional studies.;No information published from certain regions.;0;0;0;0;0;0;0;0;0;0;0;0;4;0;0
+Taxon. Coverage general;Use in multi-taxa studies.;Mismatches of scientific names from different taxa with the same name.;0;0;0;0;0;0;0;0;0;0;0;0;5;0;0
+;Use when specific checklists are not available.;;0;0;0;0;0;0;0;0;0;0;0;0;5;0;0
+Taxon. Coverage specific;Use in studies of specific taxa.;May not have an automated tool available for certain taxa.;0;0;0;0;0;0;0;0;0;0;0;0;6;0;0
+Type of matching fuzzy;Correct checklists typos.;Led to misidentification of taxa with similar names (even in different parts of the tree of life) [12].;0;0;0;0;0;0;0;0;0;0;0;0;7;0;0
+;Include scientific names with spelling variations based on different sources.;Different outputs depending on score value.;0;0;0;0;0;0;0;0;0;0;0;0;7;0;0
+Type of matching exact;Avoid misidentification due to typos or misspellings of scientific names.;May decrease number of records due to differences in scientific names.;0;0;0;0;0;0;0;0;0;0;0;0;8;0;0
+Is the record identified at a proper taxonomic rank? ;Helps identifying reliable information.;Discard scientific names of higher taxonomic ranks reduce available information.;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0
+;If higher, discard scientific names due to uncertainty on identification.;May lead to misidentifications due to conflicts between varieties, subspecies, forms or hybrids when merge into the next higher rank.;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0
+;If lower, merge scientific name into the next higher rank simplifies the taxonomic checklist.;;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0
+Does the scientific name have authorship information? ;Helps identifying potential misidentifications.;Discard scientific names that does not have authorship information reduce available information.;0;0;0;0;0;0;0;0;0;0;0;0;0;2;0
+;;Potential misidentification if this filter is not applied.;0;0;0;0;0;0;0;0;0;0;0;0;0;2;0
+;;Increase time of processing.;0;0;0;0;0;0;0;0;0;0;0;0;0;2;0
+;;Authorship names can be spelling differently, so manually checks are needed.;0;0;0;0;0;0;0;0;0;0;0;0;0;2;0
+Check taxonomical status accepted;Accepted (pros):;Accepted (cons):;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1
+;Reliable information.;Some records do not include authorship information which increase the uncertainty to confirm taxonomical status.;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1
+;;Potential misidentification if authorship names differ between input names and accepted ones.;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1
+Check taxonomical status synonym;Synonym (pros):;Synonym (cons):;0;0;0;0;0;0;0;0;0;0;0;0;0;0;2
+;Correct outdated scientific names.;Change information from original source.;0;0;0;0;0;0;0;0;0;0;0;0;0;0;2
+;Harmonize taxa for interspecific studies.;Potential misidentifications due to regional differences in identification.;0;0;0;0;0;0;0;0;0;0;0;0;0;0;2
+Check taxonomical status unresolved;Unresolved (pros):;Unresolved (cons):;0;0;0;0;0;0;0;0;0;0;0;0;0;0;3
+;Manual corrections afterwards to include information.;Potential misidentifications.;0;0;0;0;0;0;0;0;0;0;0;0;0;0;3
+;Metadata revision to find taxonomic errors.;;0;0;0;0;0;0;0;0;0;0;0;0;0;0;3
