@@ -3,12 +3,13 @@ https://ecoinformatic.shinyapps.io/OCCUR/
 
 **INSTRUCTIONS**
 1. Choose a module of the 5 available in the left panel.
-2. Select between filters / steps in left-upper box (there are no previous selections marked).
-3. Check the "Trade-off" table that will display with each selection in the right-upper box (left panel).
-4. Check the "Methods" table that will display with each selection in the right-upper box (right panel).
-5. See the bibliography associated in the "References" panel.
-6. Check how certainty and data coverage varies with each selection in the left-bottom panel to make your final selection. Values goes from 0 (minimum certainty or data coverage available) to 1 (maximum certainty or data coverage available).
-7. Download the final guide to process data and write the methods section based on the selected steps by module in the "Final report" tab.'
+![image](https://github.com/cRonFer/OCCUR/assets/76005368/c591fcef-8361-4634-80df-0077fda4daca)
+3. Select between filters / steps in left-upper box (there are no previous selections marked).
+4. Check the "Trade-off" table that will display with each selection in the right-upper box (left panel).
+5. Check the "Methods" table that will display with each selection in the right-upper box (right panel).
+6. See the bibliography associated in the "References" panel.
+7. Check how certainty and data coverage varies with each selection in the left-bottom panel to make your final selection. Values goes from 0 (minimum certainty or data coverage available) to 1 (maximum certainty or data coverage available).
+8. Download the final guide to process data and write the methods section based on the selected steps by module in the "Final report" tab.'
 
 ```mermaid
 graph LR
