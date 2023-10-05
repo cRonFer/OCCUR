@@ -33,9 +33,9 @@ https://ecoinformatic.shinyapps.io/OCCUR/
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/3660b67e-e76c-472e-8629-0913d34ab15d)
 4. Check the "Methods" table that will display with each selection in the right-upper box (middle panel).
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/d8b94cde-a985-437c-8c77-9a7e7ac2147d)
-5. See the bibliography associated in the "References" panel and click in 'see Ref' to open the link in your web browser.
+5. See the bibliography associated in the "References" panel and click in 'See ref' to open the link in your web browser.
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/04a96ed5-b87d-4585-a42b-c191c0c9fe23)
-6. Check an exaple of the associated "R Code" in the table that will display with each selection in the right-upper box (right panel). Use the 'copy' button to add the lines into your R code.
+6. Check an example of the associated "R Code" in the table that will display with each selection in the right-upper box (right panel). Use the 'copy' button to add the lines into your R code.
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/19592e7c-9f16-4be3-b57a-f689a5ddf460)
 7. Check how certainty and data coverage varies with each selection in the left-bottom panel to make your final selection. Values goes from 0 (minimum certainty or data coverage available) to 1 (maximum certainty or data coverage available).
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/0c65121f-81a6-47ab-8ae3-dc736e78a459)
