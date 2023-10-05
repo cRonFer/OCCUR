@@ -1,5 +1,4 @@
-**[OCCUR](https://ecoinformatic.shinyapps.io/OCCUR/)** app is a "step by step" guide that goes over 5 different modules to curate biodiversity data records. It was created to facilitate the process of filtering,cleaning and validating occurrence species records from data repositories.This interactive workflow will help the user in the selection of data records between all possibilities depending on their study case, considering their pros and cons.Each module will also display how data certainty and data coverage change when selecting different scenarios of the application of filtering and cleaning rules.
-https://ecoinformatic.shinyapps.io/OCCUR/
+**[OCCUR](https://ecoinformatic.shinyapps.io/OCCUR/)** app is a "step by step" guide that goes over 5 different modules to curate biodiversity data records. 
 
 ```mermaid
 graph LR
@@ -20,6 +19,10 @@ style E fill:#605ca8,stroke:#333,color:#fff
 style ide1 fill:transparent,stroke:#333,color:#333
   end
 ```
+
+It was created to facilitate the process of filtering,cleaning and validating occurrence species records from data repositories.This interactive workflow will help the user in the selection of data records between all possibilities depending on their study case, considering their pros and cons.Each module will also display how data certainty and data coverage change when selecting different scenarios of the application of filtering and cleaning rules.
+https://ecoinformatic.shinyapps.io/OCCUR/
+
 
 **INSTRUCTIONS**
 1. Choose a module of the 5 available in the left panel.
