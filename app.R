@@ -1,12 +1,5 @@
-#### OCCUR shinyApp, Cristina Ronquillo 2022 ####
-# Package names
-# packages <- c('shiny', 'shinydashboard', 'shinyWidgets', 'shinythemes','dplyr','ggplot2', 'data.table', 'DT')
-# # Install packages not yet installed
-# # installed_packages <- packages %in% rownames(installed.packages())
-# # if (any(installed_packages == FALSE)) {
-# #   install.packages(packages[!installed_packages])
-# # }
-# 
+#### OCCUR shinyApp ####
+
 # # Packages loading
 library(shiny)
 library(shinydashboard)
@@ -16,26 +9,27 @@ library(dplyr)
 library(ggplot2)
 library(data.table)
 library(DT)
-# invisible(lapply(packages, library, character.only = TRUE))
+library(rclipboard)
 # Load datasets
 data <- fread('Data/data_proscons.csv', sep = ";", header = TRUE)
 meth <- fread('Data/data_methods.csv', sep = ";", header = TRUE)
+RcodeData <- fread('Data/data_RCode.csv', sep = ";", header = TRUE, encoding="UTF-8")
 plot <- fread('Data/chartData.csv', sep = ";", header = TRUE)
 
 # Define UI for application ####
 ui <- dashboardPage(
   dashboardHeader(title = 'OCCUR app',
                   titleWidth = 250,
-                  dropdownMenu(type = "messages",
-                               messageItem(
-                                 from = "Contact email",
-                                 message = "cristinaronquilloferrero@gmail.com"
-                               ),
-                               messageItem(
-                                 from = "Help",
-                                 message = "More info in paperDOI",
-                                 icon = icon("life-ring")
-                               ))
+                  tags$li(
+                    a(
+                      strong("SOURCE"),
+                      height = 40,
+                      href = "https://github.com/****/OCCUR",
+                      title = "",
+                      target = "_blank"
+                    ),
+                    class = "dropdown"
+                  )
   ),
   # sidebar####
   dashboardSidebar(
@@ -59,14 +53,16 @@ ui <- dashboardPage(
       menuItem("Temporal", tabName = "Temporal", icon = icon("time",lib = "glyphicon")),
       menuItem("Duplicates", tabName = "Duplicates", icon = icon("duplicate",lib = "glyphicon")),
       menuItem("Final Report", tabName = "report", icon = icon("save", lib = "glyphicon")),
-      menuItem("References", tabName = "references", icon = icon("list-alt", lib = "glyphicon"))
+      # menuItem("R code", tabName = "Rcode", icon = icon("wrench", lib = "glyphicon")),
+      menuItem("References", tabName = "references", icon = icon("list-alt", lib = "glyphicon")),
+      menuItem("About", tabName = "ABOUT", icon = icon("question-sign", lib = "glyphicon"))
     )
   ),
   
   dashboardBody(
     tabItems(
       tabItem(
-        # HOME ####
+      # HOME ####
         tabName = 'dashboard',
         fluidRow(
           valueBoxOutput("infoBox", width = 12),
@@ -76,27 +72,29 @@ ui <- dashboardPage(
                tags$figure(
                  align = "center",
                  #tags$figcaption(h4("Flowchart of the 5 modules considered in OCCURapp")),
-                 tags$img(src ='mermaid-diagram.svg', height ="100%", width ="100%")
+                 tags$img(src ='ModuleDiagram.svg', height ="100%", width ="100%")
                ),
                HTML('2. Select between filters / steps in left-upper box (there are no previous 
             selections marked).<br><br>
             3. Check the "Trade-off" table that will display with each selection 
             in the right-upper box (left panel).<br><br>
             4. Check the "Methods" table that will display with each selection in 
+            the right-upper box (middle panel).<br><br>
+            5. Check and copy the "R Code" table that will display with each selection in 
             the right-upper box (right panel).<br><br>
-            5. See the bibliography associated in the "References" panel.<br><br>
-            6. Check how certainty and data coverage varies with each selection 
+            6. See the bibliography associated in the "References" panel.<br><br>
+            7. Check how certainty and data coverage varies with each selection 
             in the left-bottom panel to make your final selection. Values goes from 0 
             (minimum certainty or data coverage available) to 1 (maximum certainty 
             or data coverage available).<br><br>
-            7. Download the final guide to process data 
+            8. Download the final guide to process data 
             and write the methods section based on the selected steps by 
             module in the "Final report" tab.')), width = 7
           ),
           box(
             tags$figure(
               align = "center",
-              tags$img(src ='Fig3c.svg', height ="100%", width ="100%")
+              tags$img(src ='FigTradeOff.svg', height ="100%", width ="100%")
             ), 
             h5("Variation in the number of records available data coverage (continuous line) 
                 and data certainty estimates (dotted line) based on precision and accuracy of records information)"),
@@ -125,7 +123,9 @@ ui <- dashboardPage(
                          tabPanel(strong('Trade-off'),
                                   DT::dataTableOutput(outputId = "bortable")),
                          tabPanel(strong('Methods'),
-                                  h4(HTML('<br><br>Filter dataset using fields like dwc::basisOfRecord')))
+                                  h4(HTML('<br><br>Filter dataset using fields like dwc::basisOfRecord'))),
+                         tabPanel(strong('R code'),
+                                  DT::dataTableOutput(outputId = "borRcodeTable"))
                        ),
                        height = 550, width = NULL),
                        valueBoxOutput("progressBox1", width = NULL)
@@ -154,7 +154,9 @@ ui <- dashboardPage(
                          tabPanel(strong('Trade-off'),
                                   DT::dataTableOutput(outputId = "taxDownTable")),
                          tabPanel(strong('Methods'),
-                                  h4('No methods associated with this step'))
+                                  h4('No methods associated with this step')),
+                         tabPanel(strong('R code'),
+                                  DT::dataTableOutput(outputId = "taxRcodeTable"))
                        ), width = NULL, height = 550),
                        valueBoxOutput("progressBox2", width = NULL))
               )
@@ -164,26 +166,30 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 6,
                        box(
-                         tabsetPanel(
+                         tabsetPanel(id = 'filterTax2',
                            tabPanel(strong(HTML('Checklist Type')),
+                                    value = 'panTax21',
                                     h4(radioButtons(inputId = 'op_checkType',
                                                     label = HTML('Choose a source of taxonomic information to validate your records based on type of method:<br><br>'),
                                                     choices = c('Manual (based on bibliographic references or expert knowledge)' = 1,  
                                                                 'Automatic (tools that allow unsupervised validation)' = 2), 
                                                     selected = ""))),
                            tabPanel(strong(HTML('Spatial coverage')),
+                                    value = 'panTax22',
                                     h4(radioButtons(inputId = 'op_spatialCov',
                                                     label = HTML('Choose a source of taxonomic information to validate your records based on their spatial coverage:<br><br>'),
                                                     choices = c('Global' = 1,  
                                                                 'Regional' = 2), 
                                                     selected = ""))),
                            tabPanel(strong(HTML('Taxonomical coverage')),
+                                    value = 'panTax23',
                                     h4(radioButtons(inputId = 'op_taxCov',
                                                     label = HTML('Choose a source of taxonomic information to validate your records based on their taxonomical coverage:<br><br>'),
                                                     choices = c('General (includes multiple taxa)' = 1,  
                                                                 'Specific (includes only study taxa)' = 2), 
                                                     selected = ""))),
                            tabPanel(strong(HTML('Matching Type')),
+                                    value = 'panTax24',
                                     h4(radioButtons(inputId = 'op_matchType',
                                                     label = HTML('Choose a type of taxonomic tool based on how matches taxon names:<br><br>'),
                                                     choices = c('Fuzzy spelling' = 1,  
@@ -195,10 +201,12 @@ ui <- dashboardPage(
                 column(width = 6,
                        box(tabsetPanel(
                          tabPanel(strong('Trade-off'),
-                                  DT::dataTableOutput(outputId = "taxCheckTablePC"),
-                                  DT::dataTableOutput(outputId = "taxSpatTablePC"),
-                                  DT::dataTableOutput(outputId = "taxCovTablePC"),
-                                  DT::dataTableOutput(outputId = "taxMatchTablePC")),
+                                  tabsetPanel(id = 'tabPCTax2',
+                                    tabPanel('Checklist Type', value= 'tabPCTax2CT', DT::dataTableOutput(outputId = "taxCheckTablePC")),
+                                    tabPanel('Spatial coverage', value= 'tabPCTax2SC', DT::dataTableOutput(outputId = "taxSpatTablePC")),
+                                    tabPanel('Taxonomical coverage', value= 'tabPCTax2TC', DT::dataTableOutput(outputId = "taxCovTablePC")),
+                                    tabPanel('Matching Type', value= 'tabPCTax2MT', DT::dataTableOutput(outputId = "taxMatchTablePC"))
+                                    )),
                          tabPanel(strong('Methods'),
                                   DT::dataTableOutput(outputId = "taxCheckTableM"),
                                   DT::dataTableOutput(outputId = "taxSpatTableM"),
@@ -226,12 +234,16 @@ ui <- dashboardPage(
                 column(width = 6,
                        box(tabsetPanel(
                          tabPanel(strong('Trade-off'),
-                                  DT::dataTableOutput(outputId = "taxRankTable"),
-                                  DT::dataTableOutput(outputId = "taxAuthorTablePC")
+                                  tabsetPanel(
+                                    tabPanel('Taxon Rank', DT::dataTableOutput(outputId = "taxRankTable")),
+                                    tabPanel('Authorship', DT::dataTableOutput(outputId = "taxAuthorTablePC")))
                          ),
                          tabPanel(strong('Methods'),
                                   h4(textOutput(outputId = "taxRankTableM")),
-                                  h4(textOutput(outputId = "taxAuthorTableM")))
+                                  h4(textOutput(outputId = "taxAuthorTableM"))),
+                         tabPanel(strong('R code'),
+                                 DT::dataTableOutput(outputId = "taxRankRcodeTable"),
+                                DT::dataTableOutput(outputId = "taxAuthorRcodeTable"))
                        ), width = NULL, height = 575),
                        valueBoxOutput("progressBox2c", width = NULL)
                 )
@@ -255,9 +267,15 @@ ui <- dashboardPage(
                 column(width = 6,
                        box(tabsetPanel(
                          tabPanel(strong('Trade-off'),
-                                  DT::dataTableOutput(outputId = "taxStatusTable")),
+                                  tabsetPanel(
+                                    tabPanel('Accepted', DT::dataTableOutput(outputId = "taxStatusAccepted")),
+                                    tabPanel('Synonym', DT::dataTableOutput(outputId = "taxStatusSynon")),
+                                    tabPanel('Unresolved', DT::dataTableOutput(outputId = "taxStatusUnres"))
+                                    )),
                          tabPanel(strong('Methods'),
-                                  h4('No methods associated with this step'))
+                                  h4('e.g. Use Web service of Taxonomic Name Resolution Service (TNRS);
+                                     Normalization of species names against GBIF Backbone 
+                                     in https://www.gbif.org/tools/species-lookup'))
                        ), height = 550, width = NULL),
                        valueBoxOutput("progressBox2d", width = NULL)
                 )
@@ -292,7 +310,9 @@ ui <- dashboardPage(
                          tabPanel(strong('Trade-off'),
                                   DT::dataTableOutput(outputId = 'prev_geoTable')),
                          tabPanel(strong('Methods'),
-                                  h4('No methods associated with this step'))
+                                  h4('No methods associated with this step')),
+                         tabPanel(strong('R Code'),
+                                  DT::dataTableOutput(outputId = 'prev_geoRCodeTable'))
                        ), width = NULL, height = 525),
                        valueBoxOutput("progressBox3", width = NULL)
                 )
@@ -310,11 +330,11 @@ ui <- dashboardPage(
                                                                 label = HTML("Choose between:<br><br>"), 
                                                                 choices = c(
                                                                   'a.	Filter and discard records which precision value is 
-                                       below an established threshold' = 1,
-                                       'b. Use number of decimal digits of coordinates 
-                                       as a measure of their precision' = 2,
-                                       'c. Skip filtering by coordinates precision' = 3),
-                                       selected = ''))
+                                                                   below an established threshold' = 1,
+                                                                   'b. Use number of decimal digits of coordinates 
+                                                                   as a measure of their precision' = 2,
+                                                                   'c. Skip filtering by coordinates precision' = 3),
+                                                                   selected = ''))
                                        ),
                                        tabPanel(strong(HTML("2. Check coordinates'<br>values")),
                                                 value = 'panGeo22',
@@ -328,7 +348,7 @@ ui <- dashboardPage(
                                                                 ), selected = ''))),
                                        tabPanel(strong(HTML('3. Check position<br>of coordinates')),
                                                 value = 'panGeo23',
-                                                h4(radioButtons(inputId = 'Geo23',
+                                                h5(radioButtons(inputId = 'Geo23',
                                                                 label = HTML('Validate each option from low to high strictness:<br><br>'),
                                                                 choices = c(
                                                                   'a. Are coordinates placed in correct habitat (sea / land)?' = 1,
@@ -367,7 +387,19 @@ ui <- dashboardPage(
                                                        DT::dataTableOutput(outputId = 'geoValueTableM')),
                                               tabPanel(strong(HTML('3. Check position<br>of coordinates')),
                                                        value = 'tabMTGeo23',
-                                                       DT::dataTableOutput(outputId = 'geoPositionTableM'))))
+                                                       DT::dataTableOutput(outputId = 'geoPositionTableM')))),
+                         tabPanel(strong('R Code'),
+                                  tabsetPanel(id = 'tabRCodeGeo2',
+                                              tabPanel(strong(HTML('1. Check coordinates<br>precision')),
+                                                       value = 'tabRCodeGeo21',
+                                                       DT::dataTableOutput(outputId = 'geoPrecisionTableRCode')),
+                                              tabPanel(strong(HTML('2. Check coordinates<br>values')),
+                                                       value = 'tabRCodeGeo22',
+                                                       DT::dataTableOutput(outputId = 'geoValueTableRCode')),
+                                              tabPanel(strong(HTML('3. Check position<br>of coordinates')),
+                                                       value = 'tabRCodeGeo23',
+                                                       DT::dataTableOutput(outputId = 'geoPositionTableRCode'))))
+                         
                        ),width = NULL, height = 525),
                        valueBoxOutput("progressBox3b", width = NULL))
                 
@@ -450,7 +482,9 @@ ui <- dashboardPage(
                                                        DT::dataTableOutput(outputId = "distTableM")),
                                               tabPanel(strong('Use environmental information'),
                                                        value = 'tabMTEnv',
-                                                       DT::dataTableOutput(outputId = "envTableM"))))
+                                                       DT::dataTableOutput(outputId = "envTableM")))),
+                         tabPanel(strong('R code'),
+                                  DT::dataTableOutput(outputId = "geo4RcodeTable"))
                        ), width = NULL,height = 525),
                        valueBoxOutput("progressBox3d", width = NULL)  
                 )
@@ -498,7 +532,13 @@ ui <- dashboardPage(
                                                      tabPanel('Level', DT::dataTableOutput(outputId = "tempLeveltable"))
                                                    ))),
                          tabPanel(strong('Methods'),
-                                  h4('Filter dataset using fields like day; month; year or eventDate'))
+                                  h4('Filter dataset using fields like day; month; year or eventDate')),
+                         tabPanel(strong('R code'),
+                                  DT::dataTableOutput(outputId = "tempRcodeTable"),
+                                  conditionalPanel(condition = 'input.temp == 2',
+                                                   tabsetPanel(
+                                                     tabPanel('Range', DT::dataTableOutput(outputId = "tempRangeRcodetable")),
+                                                     tabPanel('Level', DT::dataTableOutput(outputId = "tempLevelRcodetable")))))
                        ), width = NULL, height = 550),
                        valueBoxOutput("progressBox4", width = NULL)
                 )
@@ -540,7 +580,11 @@ ui <- dashboardPage(
                          tabPanel(strong('Methods'),
                                   DT::dataTableOutput(outputId = "duplicatesPostableM"),
                                   DT::dataTableOutput(outputId = "duplicatesTimetableM"),
-                                  DT::dataTableOutput(outputId = "duplicatesRectableM"))
+                                  DT::dataTableOutput(outputId = "duplicatesRectableM")),
+                         tabPanel(strong('R code'),
+                                  DT::dataTableOutput(outputId = "duplicatesPostableRCode"),
+                                  DT::dataTableOutput(outputId = "duplicatesTimetableRCode"),
+                                  DT::dataTableOutput(outputId = "duplicatesRectableRCode"))
                        ), width = NULL, height = 550),
                        
                        valueBoxOutput("progressBox5", width = NULL)
@@ -571,6 +615,7 @@ ui <- dashboardPage(
                               color = "success"))
         )
       ),
+  
       # REFERENCES ####
       tabItem(
         tabName = "references",
@@ -588,12 +633,40 @@ ui <- dashboardPage(
                             ")))
           )
         )
+      ),
+      # ABOUT OCCUR ####
+      tabItem(
+        tabName = "ABOUT",
+        fluidRow(
+          column(width = 12,
+                 uiOutput(outputId = 'AboutText'),
+                 tags$head(tags$style(HTML("
+                            #referencesText {
+                            font-size: 14px;
+                            color: #605ca8;
+                            font-weight: bolder;
+                            font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif
+                            white-space: pre-line
+                            }
+                            ")))
+          )
+        )
       )
     )
   ), skin = "purple"
 )
 # Define server logic required ####
 server <- function(input, output, session) {
+  observe({
+    if(input$filterTax2 == 'panTax21'){
+      updateTabsetPanel(session, 'tabPCTax2', selected = 'tabPCTax2CT')}
+    else if(input$filterTax2 == 'panTax22'){
+      updateTabsetPanel(session, 'tabPCTax2', selected = 'tabPCTax2SC')}
+    else if(input$filterTax2 == 'panTax23'){
+      updateTabsetPanel(session, 'tabPCTax2', selected = 'tabPCTax2TC')}
+    else if(input$filterTax2 == 'panTax24'){
+      updateTabsetPanel(session, 'tabPCTax2', selected = 'tabPCTax2MT')}
+  })
   observe({
     if(input$filterGeo4 == 'filterGeo4Dist'){
       updateTabsetPanel(session, "tabPCGeo4", selected = 'tabPCDist')}
@@ -621,6 +694,14 @@ server <- function(input, output, session) {
       updateTabsetPanel(session, 'tabMTGeo2', selected = 'tabMTGeo22')}
     else if(input$filterGeo2 == 'panGeo23'){
       updateTabsetPanel(session, 'tabMTGeo2', selected = 'tabMTGeo23')}
+  })
+  observe({
+    if(input$filterGeo2 == 'panGeo21'){
+      updateTabsetPanel(session, 'tabRCodeGeo2', selected = 'tabRCodeGeo21')}
+    else if(input$filterGeo2 == 'panGeo22'){
+      updateTabsetPanel(session, 'tabRCodeGeo2', selected = 'tabRCodeGeo22')}
+    else if(input$filterGeo2 == 'panGeo23'){
+      updateTabsetPanel(session, 'tabRCodeGeo2', selected = 'tabRCodeGeo23')}
   })
   
   # PLOT OUTPUTS ####
@@ -6146,15 +6227,15 @@ server <- function(input, output, session) {
           plot5a[[2,3]] <- plot5[[2,3]]
         }
         else if(input$op_time == 'Date'){
-          plot5a[[1,3]] <- 0.5
+          plot5a[[1,3]] <- 0.6
           plot5a[[2,3]] <- 0.6 
         }
         else if(input$op_time == 'Year'){
-          plot5a[[1,3]] <- 0.6
+          plot5a[[1,3]] <- 0.4
           plot5a[[2,3]] <- 0.4
         }
         else if(input$op_time == 'No temporal info'){
-          plot5a[[1,3]] <- 0.8
+          plot5a[[1,3]] <- 0.2
           plot5a[[2,3]] <- 0.2
         }
       }
@@ -6164,16 +6245,16 @@ server <- function(input, output, session) {
           plot5a[[2,3]] <- plot5[[2,3]]
         }
         else if(input$op_time == 'Date'){
-          plot5a[[1,3]] <- 0.5
-          plot5a[[2,3]] <- 0.8
-        }
-        else if(input$op_time == 'Year'){
           plot5a[[1,3]] <- 0.6
           plot5a[[2,3]] <- 0.6
         }
-        else if(input$op_time == 'No temporal info'){
-          plot5a[[1,3]] <- 0.8
+        else if(input$op_time == 'Year'){
+          plot5a[[1,3]] <- 0.4
           plot5a[[2,3]] <- 0.4
+        }
+        else if(input$op_time == 'No temporal info'){
+          plot5a[[1,3]] <- 0.2
+          plot5a[[2,3]] <- 0.2
         }
       }
       else if(input$op_position == 'Coordinates'){
@@ -6182,7 +6263,7 @@ server <- function(input, output, session) {
           plot5a[[2,3]] <- plot5[[2,3]]
         }
         else if(input$op_time == 'Date'){
-          plot5a[[1,3]] <- 0.5
+          plot5a[[1,3]] <- 0.8
           plot5a[[2,3]] <-  0.8
         }
         else if(input$op_time == 'Year'){
@@ -6190,7 +6271,7 @@ server <- function(input, output, session) {
           plot5a[[2,3]] <-  0.6
         }
         else if(input$op_time == 'No temporal info'){
-          plot5a[[1,3]] <- 0.8
+          plot5a[[1,3]] <- 0.4
           plot5a[[2,3]] <- 0.4
         }
       }
@@ -6220,15 +6301,15 @@ server <- function(input, output, session) {
           plot5a[[2,3]] <- plot5[[2,3]]
         }
         else if(input$op_time == 'Date'){
-          plot5a[[1,3]] <- 0.3
+          plot5a[[1,3]] <- 0.8
           plot5a[[2,3]] <- 0.8 
         }
         else if(input$op_time == 'Year'){
-          plot5a[[1,3]] <- 0.8
+          plot5a[[1,3]] <- 0.6
           plot5a[[2,3]] <- 0.6
         }
         else if(input$op_time == 'No temporal info'){
-          plot5a[[1,3]] <- 0.6
+          plot5a[[1,3]] <- 0.4
           plot5a[[2,3]] <- 0.4
         }
       }
@@ -6238,16 +6319,16 @@ server <- function(input, output, session) {
           plot5a[[2,3]] <- plot5[[2,3]]
         }
         else if(input$op_time == 'Date'){
-          plot5a[[1,3]] <- 0.3
-          plot5a[[2,3]] <- 1
-        }
-        else if(input$op_time == 'Year'){
-          plot5a[[1,3]] <- 0.4
+          plot5a[[1,3]] <- 0.8
           plot5a[[2,3]] <- 0.8
         }
-        else if(input$op_time == 'No temporal info'){
+        else if(input$op_time == 'Year'){
           plot5a[[1,3]] <- 0.6
           plot5a[[2,3]] <- 0.6
+        }
+        else if(input$op_time == 'No temporal info'){
+          plot5a[[1,3]] <- 0.4
+          plot5a[[2,3]] <- 0.4
         }
       }
       else if(input$op_position == 'Coordinates'){
@@ -6256,11 +6337,11 @@ server <- function(input, output, session) {
           plot5a[[2,3]] <- plot5[[2,3]]
         }
         else if(input$op_time == 'Date'){
-          plot5a[[1,3]] <- 0.3
+          plot5a[[1,3]] <- 1
           plot5a[[2,3]] <- 1
         }
         else if(input$op_time == 'Year'){
-          plot5a[[1,3]] <- 0.4
+          plot5a[[1,3]] <- 0.8
           plot5a[[2,3]] <-  0.8
         }
         else if(input$op_time == 'No temporal info'){
@@ -6559,6 +6640,18 @@ server <- function(input, output, session) {
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px', targets = "_all"))), rownames = FALSE)
+  
+  output$borRcodeTable <- renderDataTable({
+    req(input$bor)
+    if(input$bor == 'Filter not applied'){RcodeData %>% filter(bor == 1) %>% select(code_text)}
+    else if(input$bor == 'Preserved specimens'){RcodeData %>% filter(bor == 2) %>% select(code_text)}
+    else if(input$bor == 'Observations'){RcodeData %>% filter(bor == 3) %>% select(code_text)}
+    else if(input$bor == 'Preserved specimens + Observations'){RcodeData %>% filter(bor == 4) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', width = '160px', targets = "_all"))), rownames = FALSE,colnames ="")
+  
+  
   # TAX OUTPUTS ####
   output$taxDownTable <- renderDataTable({
     req(input$download)
@@ -6577,9 +6670,18 @@ server <- function(input, output, session) {
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), 
-  rownames = FALSE, colnames = c('Checklist Type pros','Checklist Type cons'))
+  rownames = FALSE, colnames = c('Pros','Cons'))
   
-  output$taxCheckTableM <- renderDataTable({
+  output$taxRcodeTable <- renderDataTable({
+    req(input$download)
+    if(input$download == 1){RcodeData %>% filter(download_tax == 1) %>% select(code_text)}
+    else if(input$download == 2){RcodeData %>% filter(download_tax == 2) %>% select(code_text)}
+  },  extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
+  rownames = FALSE, colnames ="")
+  
+   output$taxCheckTableM <- renderDataTable({
     req(input$op_checkType)
     if(input$op_checkType == 2){meth %>% filter(taxonomic_db == 2) %>% select(2)}
   }, 
@@ -6593,7 +6695,7 @@ server <- function(input, output, session) {
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
-  rownames = FALSE, colnames = c('Spatial coverage pros','Spatial coverage cons'))
+  rownames = FALSE, colnames = c('Pros','Cons'))
   
   output$taxSpatTableM <- renderDataTable({
     req(input$op_spatialCov)
@@ -6611,7 +6713,7 @@ server <- function(input, output, session) {
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
-  rownames = FALSE, colnames = c('Taxonomical coverage pros','Taxonomical coverage cons'))
+  rownames = FALSE, colnames = c('Pros','Cons'))
   
   output$taxCovTableM <- renderDataTable({
     req(input$op_taxCov)
@@ -6629,7 +6731,7 @@ server <- function(input, output, session) {
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
-  rownames = FALSE, colnames = c('Matching Type pros','Matching Type cons'))
+  rownames = FALSE, colnames = c('Pros','Cons'))
   
   output$taxMatchTableM <- renderDataTable({
     req(input$op_matchType)
@@ -6646,45 +6748,67 @@ server <- function(input, output, session) {
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px', targets = "_all"))),
-  rownames = FALSE, colnames = c('Taxon Rank pros','Taxon Rank cons'))
+  rownames = FALSE, colnames = c('Pros','Cons'))
   
   output$taxRankTableM <- renderText({
     req(input$taxRank)
     if(input$taxRank == 1){return("Filter records using field like 'dwc::taxonRank'
                                   and check if scientific names correspond to species, genus, varieties, etc.")}
   })
-  
+  output$taxRankRcodeTable <- renderDataTable({
+    req(input$taxRank)
+    if(input$taxRank == 1){RcodeData %>% filter(prev_tax == 1) %>% select(code_text)}
+  },  extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))),
+  rownames = FALSE,colnames ="")
   output$taxAuthorTablePC <- renderDataTable({
     req(input$taxAuthor)
     if(input$taxAuthor == 1){data %>% filter(prev_tax == 2) %>% select(Pros, Cons)}
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
-  rownames = FALSE, colnames = c('Authorship pros','Authorship cons'))
+  rownames = FALSE, colnames = c('Pros','Cons'))
   
   output$taxAuthorTableM <- renderText({
     req(input$taxAuthor)
     if(input$taxAuthor == 1){return("Use `bdc::bdc_clean_names` [18] to split scientific names and check if authorship is included")}
   })
   
-  taxStatusTable_results <- reactive({
-    tax1 <- data %>% filter(query_tax == 1) %>% select(Pros, Cons)
-    tax2 <- data %>% filter(query_tax == 2) %>% select(Pros, Cons)
-    tax3 <- data %>% filter(query_tax == 3) %>% select(Pros, Cons)
-    tax4 <-(bind_rows(
-      if ("1" %in% input$taxStatus){tax1} else {tax1[F,]},
-      if ("2" %in% input$taxStatus){tax2} else {tax2[F,]},
-      if ("3" %in% input$taxStatus){tax3} else {tax3[F,]}
-    ))
-    return(tax4)
-  })
-  output$taxStatusTable <- renderDataTable({
+  output$taxAuthorRcodeTable <- renderDataTable({
+    req(input$taxAuthor)
+    if(input$taxAuthor == 1){RcodeData %>% filter(prev_tax == 2) %>% select(code_text)}
+     },  extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))),
+  rownames = FALSE,colnames ="")
+  
+  output$taxStatusAccepted <- renderDataTable({
     req(input$taxStatus)
-    taxStatusTable_results()
+    data %>% filter(query_tax == 1) %>% select(Pros, Cons)
+    
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
-  rownames = FALSE, colnames = '')
+  rownames = FALSE, colnames = c('',''))
+  
+  output$taxStatusSynon <- renderDataTable({
+    req(input$taxStatus)
+    data %>% filter(query_tax == 2) %>% select(Pros, Cons)
+  }, 
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
+                 columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
+  rownames = FALSE, colnames = c('',''))
+  
+  output$taxStatusUnres <- renderDataTable({
+    req(input$taxStatus)
+    data %>% filter(query_tax == 3) %>% select(Pros, Cons)
+  }, 
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
+                 columnDefs = list(list(className = 'dt-body-left', width = '160px',targets = "_all"))), 
+  rownames = FALSE, colnames = c('',''))
+  
+
   
   # GEO OUTPUTS ####
   output$prev_geoTable <- renderDataTable({
@@ -6697,6 +6821,16 @@ server <- function(input, output, session) {
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left',width = '160px', targets = "_all"))), 
   rownames = FALSE)
+  
+  output$prev_geoRCodeTable <- renderDataTable({
+    req(input$prev_geofilter)
+    if(input$prev_geofilter == 1){RcodeData %>% filter(geo_prev_filter == 2) %>% select(code_text)}
+    else if(input$prev_geofilter == 2){RcodeData %>% filter(geo_prev_filter == 3) %>% select(code_text)}
+    else if(input$prev_geofilter == 0){RcodeData %>% filter(geo_prev_filter == 1) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left',width = '160px', targets = "_all"))), 
+  rownames = FALSE, colnames = '')
   
   output$geoPrecisionTablePC <- renderDataTable({
     req(input$Geo21)
@@ -6717,6 +6851,16 @@ server <- function(input, output, session) {
                  columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
   colnames = NULL)  
   
+  output$geoPrecisionTableRCode <- renderDataTable({
+    req(input$Geo21)
+    if(input$Geo21 == 1){RcodeData %>% filter(coords == 1) %>% select(code_text)}
+    else if(input$Geo21 == 2){RcodeData %>% filter(coords == 2) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
+  colnames = '')  
+  
+  
   output$geoValueTablePC <- renderDataTable({
     req(input$Geo22)
     if(input$Geo22 %in% c(1,2,3)){data %>% filter(coords == 4) %>% select(Pros, Cons)}
@@ -6735,6 +6879,16 @@ server <- function(input, output, session) {
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
   colnames = NULL)
+  
+  output$geoValueTableRCode <- renderDataTable({
+    req(input$Geo22)
+    if(input$Geo22 == 1){RcodeData %>% filter(coords == 3) %>% select(code_text)}
+    else if(input$Geo22 == 2){RcodeData %>% filter(coords == 4) %>% select(code_text)}
+    else if(input$Geo22 == 3){RcodeData %>% filter(coords == 5) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
+  colnames = '')
   
   output$geoPositionTablePC <- renderDataTable({
     req(input$Geo23)
@@ -6761,6 +6915,17 @@ server <- function(input, output, session) {
                  columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
   colnames = NULL)
   
+  output$geoPositionTableRCode <- renderDataTable({
+    req(input$Geo23)
+    if(input$Geo23 == 1){RcodeData %>% filter(coords == 6) %>% select(code_text)}
+    else if(input$Geo23 == 2){RcodeData %>% filter(coords == 7) %>% select(code_text)}
+    else if(input$Geo23 == 5){RcodeData %>% filter(coords == 10) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
+  colnames = NULL)
+  
+  
   output$geo3TablePC <- renderDataTable({
     req(input$Geo3)
     if(input$Geo3 == 1){data %>% filter(no_coords == 1) %>% select(Pros, Cons)}
@@ -6780,6 +6945,16 @@ server <- function(input, output, session) {
                  columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
   colnames = NULL)
   
+  output$geo3TableRCode <- renderDataTable({
+    req(input$Geo3)
+    if(input$Geo3 == 1){RcodeData %>% filter(no_coords == 1) %>% select(code_text)}
+    else if(input$Geo3 == 2){RcodeData %>% filter(no_coords == 2) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
+  colnames = NULL)
+  
+  
   output$distTablePC <- renderDataTable({
     req(input$dist_info)
     if(input$dist_info == 1){data %>% filter(distr_env == 1) %>% select(Pros, Cons)}
@@ -6798,6 +6973,17 @@ server <- function(input, output, session) {
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
   colnames = NULL)
+  
+  output$geo4RcodeTable <- renderDataTable({
+    req(input$dist_info)
+    if(input$dist_info == 1){RcodeData %>% filter(distr_env == 1) %>% select(code_text)}
+    else if(input$dist_info == 2){RcodeData %>% filter(distr_env == 2) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, 
+  colnames = '')
+  
+  
   
   output$envTablePC <- renderDataTable({
     req(input$env_info)
@@ -6848,6 +7034,28 @@ server <- function(input, output, session) {
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
                  columnDefs = list(list(className = 'dt-body-left', width = '160px', targets = "_all"))), 
   rownames = FALSE)
+  
+  
+  output$tempRangeRcodetable <- renderDataTable({
+    req(input$op_range)
+    if(input$temp == 2){
+     if(input$op_range == 'within temporal range'){RcodeData %>% filter(temp == 2 & temp_range == 1)%>% select(code_text)}}
+    
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE, dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', width = '160px', targets = "_all"))), 
+  rownames = FALSE, colnames="")
+  
+  output$tempLevelRcodetable <- renderDataTable({
+    req(input$op_level)
+    if(input$temp == 2){
+      if(input$op_level == 'Date of collection'){RcodeData %>% filter(temp == 2 & temp_level == 2) %>% select(code_text)}
+      else if(input$op_level == 'Year of collection'){RcodeData %>% filter(temp == 2 & temp_level == 1) %>% select(code_text)}}
+      
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE, dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', width = '160px', targets = "_all"))), 
+  rownames = FALSE, colnames="")
   
   # DUPLICATES OUTPUTS ####
   output$duplicatesPostablePC <- renderDataTable({
@@ -6900,6 +7108,31 @@ server <- function(input, output, session) {
     if(input$Recorder == 1){meth %>% filter(dup_recorder == 1) %>% select(2)}
   }, 
   options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, colnames = NULL)
+  
+  
+  output$duplicatesPostableRCode <- renderDataTable({
+    req(input$op_position)
+    if(input$op_position == 'Cell'){RcodeData %>% filter(dup_position == 1) %>% select(code_text)}
+    else if(input$op_position == 'Coordinates + Buffer or rounded coordinates'){RcodeData %>% filter(dup_position == 2) %>% select(code_text)}
+    else if(input$op_position == 'Coordinates'){RcodeData %>% filter(dup_position == 3) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, colnames = NULL)
+  
+  output$duplicatesTimetableRCode <- renderDataTable({
+    req(input$op_time)
+    if(input$op_time == 'Date'){RcodeData %>% filter(dup_time == 1) %>% select(code_text)}
+    else if(input$op_time == 'Year'){RcodeData %>% filter(dup_time == 2) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
+                 columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, colnames = NULL)
+  
+  output$duplicatesRectableRCode <- renderDataTable({
+    req(input$Recorder)
+    if(input$Recorder == 1){RcodeData %>% filter(dup_recorder == 1) %>% select(code_text)}
+  }, extensions = 'Buttons',
+  options = list(lengthChange = FALSE, paging = FALSE, searching = FALSE, ordering = FALSE,info = FALSE,dom = 'Bfrtip',buttons = 'copy',
                  columnDefs = list(list(className = 'dt-body-left', targets = "_all"))), rownames = FALSE, colnames = NULL)
   
   # REPORT OUTPUTS ####
@@ -7037,7 +7270,7 @@ server <- function(input, output, session) {
           paste('\nFinally the identification and deletion of *duplicate records* will be done as the combination of same species', input$op_position, input$op_time)}}}
     
   })
-  
+
   # REFERENCES OUTPUT #####
   output$referencesText <- renderUI({
     url1 <- a("See ref", href="https://doi.org/10.1016/j.gecco.2019.e00852")
@@ -7061,11 +7294,15 @@ server <- function(input, output, session) {
     url19 <- a("See ref", href="https://doi.org/10.1111/ecog.02118")
     url20 <- a("See ref", href="https://doi.org/10.1111/ecog.05793")
     url21 <- a("See ref", href="https://doi.org/10.1111/2041-210X.13779")
+    url22 <- a("See ref", href="https://doi.org/10.1111/jbi.14543")
+    url23 <- a("See ref", href="https://doi.org/10.1111/2041-210X.13629")
+    url24 <- a("See ref", href="https://doi.org/10.1111/2041-210X.13966")
+    url25 <- a("See ref", href="https://doi.org/10.1111/2041-210X.14099")
     tagList(
       HTML("<br>[1] Jin, J. & Yang, J. (2020). BDcleaner: A workflow for cleaning taxonomic and geographic errors in occurrence data archived in biodiversity databases, 
    Global Ecology and Conservation, 21, e00852, ISSN 2351-9894,"), url1,
-   HTML("<br>[2] Speed JDM, Bendiksby M, Finstad AG, Hassel K, Kolstad AL, et al. (2018) Contrasting spatial, temporal and environmental patterns in 
-   observation and specimen based species occurrence data. PLOS ONE 13(4): e0196417."), url2,
+   HTML("<br>[2] Speed JDM, Bendiksby M, Finstad AG, Hassel K, Kolstad AL, et al. (2018). Contrasting spatial, temporal and environmental patterns in 
+   observation and specimen based species occurrence data. PLOS ONE, 13(4): e0196417."), url2,
    HTML("<br>[3] Shirey, V., Belitz, M.W., Barve, V. and Guralnick, R. (2021), A complete inventory of North 
    American butterfly occurrence data: narrowing data gaps, but increasing bias. Ecography, 44: 537-547"), url3,
    HTML("<br>[4] Tiago, P., Ceia-Hasse, A., Marques, T.A. et al. (2017).Spatial distribution of citizen science casuistic observations 
@@ -7076,45 +7313,85 @@ server <- function(input, output, session) {
    of data limits biodiversity research. Ecology and Evolution; 7:6863-6870."), url6,
    HTML("<br>[7] Stropp, J., Ladle, R., Malhado, A., Hortal, J., Gaffuri, J., Temperley, W., Olav Skoien, 
    J. & Mayaux, P. (2016). Mapping ignorance: 300 years of collecting flowering plants in Africa: 
-   300 Years of collecting flowering plants in Africa. Global Ecology and Biogeography 25 (9): 1085-1096"), url7,
+   300 Years of collecting flowering plants in Africa. Global Ecology and Biogeography, 25 (9): 1085-1096"), url7,
    HTML("<br>[8] Meyer, C., Weigelt, P. & Kreft, H. (2016). Multidimensional biases, gaps and uncertainties 
-   in global plant occurrence information. Ecology Letters 19 (8): 992-1006"),url8,
+   in global plant occurrence information. Ecology Letters, 19 (8): 992-1006"),url8,
    HTML("<br>[9] Menegotto, A. & Rangel, T.F. (2018). Mapping knowledge gaps in marine 
-   diversity reveals a latitudinal gradient of missing species richness. Nature Communications 9, 4713."), url9,
+   diversity reveals a latitudinal gradient of missing species richness. Nature Communications, 9, 4713."), url9,
    HTML("<br>[10] Feeley, K.J. & Silman, M.R. (2010). Modelling the responses of Andean and 
    Amazonian plant species to climate change: the effects of georeferencing errors and 
    the importance of data filtering. Journal of Biogeography, 37: 733-740."), url10,
    HTML("<br>[11] Troudet, J., Grandcolas, P., Blin, A., Vignes-Lebbe, R. & Legendre, F. (2017). 
-   Taxonomic bias in biodiversity data and societal preferences. Scientific Reports 7, 9132"), url11,
+   Taxonomic bias in biodiversity data and societal preferences. Scientific Reports, 7, 9132"), url11,
    HTML("<br>[12] Grenie, M., Berti, E., Carvajal-Quintero, J., Dadlow, G. M., Sagouis, A. & Winter, M. (2022). 
    Harmonizing taxon names in biodiversity data: A review of tools, databases and best practices. 
    Methods in Ecology and Evolution, 00, 1- 14."), url12,
    HTML("<br>[13] Vandepitte, L., Bosch, S., Tyberghein, L., Waumans, F., Vanhoorne, B., Hernandez, 
    F., De Clerck, O. & Mees, J. (2015). Fishing for data and sorting the catch: assessing the data quality, 
-   completeness and fitness for use of data in marine biogeographic databases. Database Vol. 2014: article ID bau125;"), url13,
+   completeness and fitness for use of data in marine biogeographic databases. Database, Vol. 2014: article ID bau125"), url13,
    HTML("<br>[14] Chapman, A.D. (2005). Principles and methods of data cleaning - Primary species and species occurrence data, version 
    1.0. Report for the Global Biodiversity Information Facility, Copenhagen."),url14,
-   HTML("<br>[15] Serra-Diaz, J.M., Enquist, B.J., Maitner, B. et al. Big data of tree species distributions: 
-   how big and how good?. For. Ecosyst. 4, 30 (2017)."), url15, 
+   HTML("<br>[15] Serra-Diaz, J.M., Enquist, B.J., Maitner, B. et al. (2017). Big data of tree species distributions: 
+   how big and how good?. Forest Ecosystems, 4, 30"), url15, 
    HTML("<br>[16] Meiri, S. (2018). The smartphone fallacy - when spatial data are reported at spatial scales finer 
-   than the organisms themselves. Frontiers of Biogeography, 10(1-2). Retrieved from https://escholarship.org/uc/item/2n3349jg"), url16,
-   HTML("<br>[17] Zizka, A., Silvestro, D., Andermann, T., Azevedo, J., Duarte Ritter, C., Edler, D., (.) Antonelli, A. (2019). 
+   than the organisms themselves. Frontiers of Biogeography, 10(1-2)."), url16,
+   HTML("<br>[17] Zizka, A., Silvestro, D., Andermann, T., Azevedo, J., Duarte Ritter, C., Edler, D., (...) Antonelli, A. (2019). 
    CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. Methods in Ecology and Evolution, -7. 
-   R package version 2.0-20, URL: https://github.com/ropensci/CoordinateCleaner."), url17,
+   R package version 2.0-20, https://github.com/ropensci/CoordinateCleaner."), url17,
    HTML("<br>[18] Ribeiro, B.R., Velazco, S.J., Guidoni-Martins, K., Tessarolo, G., Jardim, L., Bachman, 
    S.P. & Loyola, R. (2022). bdc: A toolkit for standardizing, integrating and cleaning biodiversity data. 
    Methods in Ecology and Evolution, 00, 1 - 8."), url18,
-   HTML("<br>[19] Robertson, M.P., Visser, V. and Hui, C. (2016), Biogeo: an R package for 
+   HTML("<br>[19] Robertson, M.P., Visser, V. & Hui, C. (2016). Biogeo: an R package for 
    assessing and improving data quality of occurrence record datasets. Ecography, 39: 394-401."), url19,
    HTML("<br>[20] Tessarolo, G., Ladle, R., Lobo, J.M., Rangel, T. & Hortal, J. (2021). Using maps of biogeographical 
    ignorance to reveal the uncertainty in distributional data hidden in species distribution models. Ecography, 44, 1743-1755."), url20,
    HTML("<br>[21] de Lima, R. A. F., Sanchez-Tapia, A., Mortara, S. R., ter Steege, H., & de Siqueira, M. F. (2021). 
    plantR: An R package and workflow for managing species records from biological collections. Methods in 
-   Ecology and Evolution, 00, 1- 8."), url21
+   Ecology and Evolution, 00, 1- 8."), url21,
+   HTML("<br>[22] Park, D. S., Xie, Y., Thammavong, H. T., Tulaiha, R., & Feng, X. (2022). 
+   Artificial Hotspot Occurrence Inventory (AHOI). Journal of Biogeography, 00, 1-9"), url22,
+   HTML("<br>[23] Arle E, Zizka A, Keil P, et al. (2021). bRacatus: A method to estimate the accuracy and biogeographical 
+   status of georeferenced biological data. Methods in Ecology and Evolution, 12: 1609-1619"), url23,
+   HTML('<br>[24] Flannery-Sutherland, J. T., Raja, N. B., Kocsis, A. T., & Kiessling, W. (2022). fossilbrush: 
+   An R package for automated detection and resolution of anomalies in palaeontological occurrence data. 
+  Methods in Ecology and Evolution, 13, 2404-2418.'), url24,
+  HTML('<br>[25] Jones, L. A., Gearty, W., Allen, B. J., Eichenseer, K., Dean, C. D., Galvan, S., (...) & Chiarenza, A. A. 
+   (2023). palaeoverse: A community-driven R package to support palaeobiological analysis. Methods in Ecology and Evolution, 
+    14, 2205-2215.'), url25
     )
     
   })
-  # DOWNLOAD OUTPUT####
+  # About OUTPUT #####
+  output$AboutText <- renderUI({
+    urlref <- a('GitHub', href='https://github.com/***/OCCUR/issues')
+    tagList(strong(HTML('
+OCCUR is an open-source app based on Shiny and developed by ******* in 2022. <br>
+Click on "SOURCE" button (top-right corner) to access our github repository. 
+README file with Instructions for use, code and input data used to generate this Shiny app available there<br>
+
+
+Detailed information will be available in "OCCUR Shiny application: A user-friendly 
+guide for curating species occurrence records" manuscript (in preparation)<br><br>
+
+Contact:<br>
+Report any bug or question in our github issues section.<br>
+Your comments, suggestions and feedback are important.<br><br> 
+Last update:<br>
+October 2023<br>')))
+  }
+  )
+  
+  # DOWNLOAD R CODE OUTPUT####
+  output$downloadRcode <- downloadHandler(
+    
+    filename = function() {
+      paste('OCCUR_App_RCode_', Sys.Date(), '.txt', sep = '\t')
+    },
+    content = function(con) {
+      write.table(reportRcode, con, row.names = FALSE, col.names = FALSE, sep = ';', quote = FALSE)
+    }
+  )
+  # DOWNLOAD REPORT OUTPUT####
   output$downloadData <- downloadHandler(
     
     filename = function() {
