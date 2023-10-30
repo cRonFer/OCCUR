@@ -28,22 +28,22 @@ style ide1 fill:transparent,stroke:#333,color:#333
 
 **INSTRUCTIONS**
 1. Choose a module of the 5 available in the left panel.
-![image](https://github.com/cRonFer/OCCUR/assets/76005368/c591fcef-8361-4634-80df-0077fda4daca)
+![image](https://github.com/cRonFer/OCCUR/assets/76005368/287c88ef-80ee-4c6a-8d1e-41b59eb15069)
 2. Select between filters / steps in left-upper box (there are no previous selections marked).
-![image](https://github.com/cRonFer/OCCUR/assets/76005368/755c9e1f-a117-4d25-a22f-926d7f9ffc48)
-4. Check the "Trade-off" table that will display with each selection in the right-upper box (left panel).
+![image](https://github.com/cRonFer/OCCUR/assets/76005368/88e0e66c-a512-4972-867e-37976224a828)
+3. Check the "Trade-off" table that will display with each selection in the right-upper box (left panel).
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/3660b67e-e76c-472e-8629-0913d34ab15d)
-5. Check the "Methods" table that will display with each selection in the right-upper box (middle panel).
+4. Check the "Methods" table that will display with each selection in the right-upper box (middle panel).
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/d8b94cde-a985-437c-8c77-9a7e7ac2147d)
-6. See the bibliography associated in the "References" panel and click in 'See ref' to open the link in your web browser.
+5. See the bibliography associated in the "References" panel and click in 'See ref' to open the link in your web browser.
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/04a96ed5-b87d-4585-a42b-c191c0c9fe23)
-7. Check an example of the associated "R Code" in the table that will display with each selection in the right-upper box (right panel). Use the 'copy' button to add the lines into your R code.
+6. Check an example of the associated "R Code" in the table that will display with each selection in the right-upper box (right panel). Use the 'copy' button to add the lines into your R code.
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/19592e7c-9f16-4be3-b57a-f689a5ddf460)
-8. Check how certainty and data coverage varies with each selection in the left-bottom panel to make your final selection. Values goes from 0 (minimum certainty or data coverage available) to 1 (maximum certainty or data coverage available).
+7. Check how certainty and data coverage varies with each selection in the left-bottom panel to make your final selection. Values goes from 0 (minimum certainty or data coverage available) to 1 (maximum certainty or data coverage available).
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/0c65121f-81a6-47ab-8ae3-dc736e78a459)
-9. Check the options marked in each module in the bottom-right box.
+8. Check the options marked in each module in the bottom-right box.
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/5eaa8684-5fbf-4d70-a056-72f207b68cc3)
-10. Click in the Download button in the "Final report" tab to obtain your final guide to process data and write the methods section based on the selected steps by module. 
+9. Click in the Download button in the "Final report" tab to obtain your final guide to process data and write the methods section based on the selected steps by module. 
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/48416e43-b3c9-497e-a382-fc866600bddf)
 
 
