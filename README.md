@@ -28,9 +28,9 @@ style ide1 fill:transparent,stroke:#333,color:#333
 
 **INSTRUCTIONS**
 1. Choose a module of the 5 available in the left panel.
-![image](https://github.com/cRonFer/OCCUR/assets/76005368/287c88ef-80ee-4c6a-8d1e-41b59eb15069)
+![image](https://github.com/cRonFer/OCCUR/assets/76005368/aeab8f44-b5c1-4831-93db-41db6cbd776a)
 2. Select between filters / steps in left-upper box (there are no previous selections marked).
-![image](https://github.com/cRonFer/OCCUR/assets/76005368/88e0e66c-a512-4972-867e-37976224a828)
+![image](https://github.com/cRonFer/OCCUR/assets/76005368/7f17117f-316e-4b49-8c93-bef278831c7d)
 3. Check the "Trade-off" table that will display with each selection in the right-upper box (left panel).
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/3660b67e-e76c-472e-8629-0913d34ab15d)
 4. Check the "Methods" table that will display with each selection in the right-upper box (middle panel).
