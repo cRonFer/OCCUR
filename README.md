@@ -8,10 +8,10 @@ OCCUR app goes over 5 different modules to curate biodiversity data records.
 ```mermaid
 graph LR
 subgraph ide1 [<h1><strong>MODULES]
-A(<h1>Basis Of Record<br> <h3><em>The specific nature of the data record <br>based on the original method of collection) ==> B(<h1>Taxonomy<br><h2><em>Every aspect of the harmonisation in <br>nomenclatural and taxonomical<br>standardisation of occurrence records)
+A(<h1>Basis Of Record<br> <h3><em>The specific nature of the data record <br>based on the original method of collection) ==> B(<h1>Taxonomy<br> <h2><em>Every aspect of the harmonisation in <br>nomenclatural and taxonomical<br>standardisation of occurrence records)
 B ==> C(<h1>Geography<br> <h2><em>Spatial information of occurrence records)
 C ==> D(<h1>Time<br> <h2><em>Presence of a date of collection <br>in occurrence records and <br>the definition of temporal ranges)
-D ==> E(<h1>Identical combination of information <br>in fields associated with various <br>occurrence records)   
+D ==> E(<h1>Duplicates<br> <h2><em>Identical combination of information <br>in fields associated with various <br>occurrence records)   
 
 style A fill:#1874CD,stroke:#333,color:#fff
 style B fill:#FFA500,stroke:#333,color:#fff
