@@ -1,4 +1,7 @@
-To run a complete example of the processing steps included OCCUR it is necessary:
-- Download the Script ' ' (R code) 
-- The dataset from GBIF ' ' (GBIF.org (16 November 2023) GBIF Occurrence Download  https://doi.org/10.15468/dl.u693he)
-- Download a shapefile (geopackage) of Portugal from GADM (Go to https://gadm.org/download_country.html and set Portugal, download the gpkg file)
+Here is a complete example of the processing steps included OCCUR to run locally
+The dataset to clean 'recordsGBIFOCCUR.csv' was obtained from GBIF (GBIF.org (16 November 2023) GBIF Occurrence Download  https://doi.org/10.15468/dl.u693he)
+It contains occurrences records of three species (Homalothecium aureum (Spruce) H.Rob. Syntrichia ruralis (Hedw.) F.Weber & D.Mohr Tortella squarrosa (Brid.)
+Limpr.) collected in Portugal and Spain.
+Download the dataset and the Script 'ProcessingOfRecords' (R code) 
+In this example we will filter records placed in Portugal, for this reason it will be necessary to download a polygon shapefile (geopackage) of 
+Portugal (Go to https://gadm.org/download_country.html set Portugal and download the gpkg file)
