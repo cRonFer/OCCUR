@@ -1,0 +1,4 @@
+You can run an example of the processing steps discussed in OCCUR with the follong files:
+- Script (R code) 
+- A dataset from GBIF (GBIF.org (16 November 2023) GBIF Occurrence Download  https://doi.org/10.15468/dl.u693he)
+- A shapefile (geopackage) of Portugal obtained in GADM
