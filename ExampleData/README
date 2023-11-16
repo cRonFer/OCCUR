@@ -1,4 +1,4 @@
-You can run an example of the processing steps discussed in OCCUR with the follong files:
-- Script (R code) 
-- A dataset from GBIF (GBIF.org (16 November 2023) GBIF Occurrence Download  https://doi.org/10.15468/dl.u693he)
-- A shapefile (geopackage) of Portugal obtained in GADM
+To run a complete example of the processing steps included OCCUR it is necessary:
+- Download the Script ' ' (R code) 
+- The dataset from GBIF ' ' (GBIF.org (16 November 2023) GBIF Occurrence Download  https://doi.org/10.15468/dl.u693he)
+- Download a shapefile (geopackage) of Portugal from GADM (Go to https://gadm.org/download_country.html and set Portugal, download the gpkg file)
