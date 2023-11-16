@@ -1,7 +1,4 @@
-![OCCURicon](https://github.com/cRonFer/OCCUR/assets/76005368/084d719e-9cd5-4c64-b769-b9529c059594)
-
-
-**[OCCUR](https://ecoinformatic.shinyapps.io/OCCUR/)** app is a step by step guide that was created to facilitate the process of filtering, cleaning and validating occurrence species records from data repositories. This interactive workflow will help the user in the selection of data records between all possibilities depending on their study case, considering their pros and cons. Each module will also display how data certainty and data coverage change when selecting different scenarios of the application of filtering and cleaning rules.
+![OCCURicon30](https://github.com/cRonFer/OCCUR/assets/76005368/09be6bbd-20ec-4de0-a3a4-e75dfb782648)&nbsp;**[OCCUR](https://ecoinformatic.shinyapps.io/OCCUR/)** app is a step by step guide that was created to facilitate the process of filtering, cleaning and validating occurrence species records from data repositories. This interactive workflow will help the user in the selection of data records between all possibilities depending on their study case, considering their pros and cons. Each module will also display how data certainty and data coverage change when selecting different scenarios of the application of filtering and cleaning rules.
 https://ecoinformatic.shinyapps.io/OCCUR/
 
 ![image](https://github.com/cRonFer/OCCUR/assets/76005368/d055a963-6af5-4853-b731-94046207de03)
