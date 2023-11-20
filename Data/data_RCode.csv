@@ -1,31 +1,31 @@
 Process;code_text;geo_prev_filter;coords;no_coords;distr_env;dup_position;dup_time;dup_recorder;download_tax;taxonomic_db;prev_tax;query_tax;bor;temp;temp_level;temp_range
-Download all records from higher taxonomic level;library(rgbif);0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
-;gbif_taxKeys <- name_backbone_checklist('familyName1')%>% filter(!matchType == 'NONE') %>% pull(usageKey);0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
-;occ_download(pred_in('taxonKey', gbif_taxKeys),format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx',email = 'xxx');0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
+Download all records from higher taxonomic level;"library(rgbif); library(dplyr)";0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
+;gbif_taxKeys <- name_backbone_checklist('familyName1') %>% filter(!matchType == 'NONE') %>% pull(usageKey);0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
+;occ_download(pred_in('taxonKey', gbif_taxKeys), format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx', email = 'xxx');0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
 ;"occ_download_wait('xxxxxxx-xxxxxxx'); occData <- occ_download_get('xxxxxxx-xxxxxxx') %>% occ_download_import()";0;0;0;0;0;0;0;1;0;0;0;0;0;0;0
-Create a list of species (accepted names and synonyms) from previous taxonomical knowledge and query databases.;library(rgbif);0;0;0;0;0;0;0;2;0;0;0;0;0;0;0
+Create a list of species (accepted names and synonyms) from previous taxonomical knowledge and query databases.;"library(rgbif); library(dplyr)";0;0;0;0;0;0;0;2;0;0;0;0;0;0;0
 ;spList <- c('spname1', 'spname2', 'spnameN');0;0;0;0;0;0;0;2;0;0;0;0;0;0;0
 ;gbif_taxKeys <- name_backbone_checklist(spList)%>% filter(!matchType == 'NONE') %>% pull(usageKey);0;0;0;0;0;0;0;2;0;0;0;0;0;0;0
-;occ_download(pred_in('taxonKey', gbif_taxKeys),format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx',email = 'xxx');0;0;0;0;0;0;0;2;0;0;0;0;0;0;0
+;occ_download(pred_in('taxonKey', gbif_taxKeys), format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx', email = 'xxx');0;0;0;0;0;0;0;2;0;0;0;0;0;0;0
 ;"occ_download_wait('xxxxxxx-xxxxxxx'); occData <- occ_download_get('xxxxxxx-xxxxxxx') %>% occ_download_import()";0;0;0;0;0;0;0;2;0;0;0;0;0;0;0
 Does the scientific name have authorship information?;"library(dplyr); library(stringr)";0;0;0;0;0;0;0;0;0;2;0;0;0;0;0
 ;data$authorshipName <- word(data$scientificName, 3, -1);0;0;0;0;0;0;0;0;0;2;0;0;0;0;0
 ;data <- data %>% filter(!is.na(authorshipName));0;0;0;0;0;0;0;0;0;2;0;0;0;0;0
 Is the record identified at a proper taxonomic rank?;library(dplyr);0;0;0;0;0;0;0;0;0;1;0;0;0;0;0
-;data <- data %>% filter(taxonRank >= XXXX | taxonRank <= XXXX );0;0;0;0;0;0;0;0;0;1;0;0;0;0;0
+;data <- data %>% filter(taxonRank == XXXX | taxonRank == XXXX ) # Examples to include: 'SPECIES', 'VARIETY', 'FORM', 'GENUS';0;0;0;0;0;0;0;0;0;1;0;0;0;0;0
 Type of matching exact;;0;0;0;0;0;0;0;0;8;0;0;0;0;0;0
 Type of matching fuzzy;;0;0;0;0;0;0;0;0;7;0;0;0;0;0;0
 Taxon. Coverage specific;;0;0;0;0;0;0;0;0;6;0;0;0;0;0;0
 Taxon. Coverage general;;0;0;0;0;0;0;0;0;5;0;0;0;0;0;0
-Only records without known coordinate issues;library(rgbif);1;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+Only records without known coordinate issues;"library(rgbif); library(dplyr)";1;0;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;occ_download(pred('hasGeospatialIssue', FALSE), format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx',email = 'xxx');1;0;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;"occ_download_wait('xxxxxxx-xxxxxxx'); occData <- occ_download_get('xxxxxxx-xxxxxxx') %>% occ_download_import()";1;0;0;0;0;0;0;0;0;0;0;0;0;0;0
-Only records with coordinates filtered by spatial extent (area or administrative units);library(rgbif);2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+Only records with coordinates filtered by spatial extent (area or administrative units);"library(rgbif); library(dplyr)";2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;occ_download(pred_within('POLYGON((-180 -90, 180 -90, 180 -60, -180 -60,-180 -90))'), pred_in('occurrenceStatus','PRESENT'),format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx',email = 'xxx');2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;occ_download(pred('country', 'ES'), format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx',email = 'xxx');2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;"occ_download_wait('xxxxxxx-xxxxxxx'); occData <- occ_download_get('xxxxxxx-xxxxxxx') %>% occ_download_import()";2;0;0;0;0;0;0;0;0;0;0;0;0;0;0
-Only records with coordinates;library(rgbif);3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
-;occ_download(pred_in('taxonKey', 'speciesName1'), pred('hasCoordinate', TRUE),format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx',email = 'xxx');3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+Only records with coordinates;"library(rgbif); library(dplyr)";3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;occ_download(pred_in('taxonKey', 'speciesName1'), pred('hasCoordinate', TRUE), format = 'SIMPLE_CSV', user = 'xxx', pwd = 'xxx',email = 'xxx');3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;"occ_download_wait('xxxxxxx-xxxxxxx'); occData <- occ_download_get('xxxxxxx-xxxxxxx') %>% occ_download_import()";3;0;0;0;0;0;0;0;0;0;0;0;0;0;0
 Filter and discard records which precision value is ;library(dplyr);0;1;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;data <- data %>% filter(!is.na(coordinatePrecision));0;1;0;0;0;0;0;0;0;0;0;0;0;0;0
@@ -38,7 +38,7 @@ Use number of decimal digits of coordinates ;library(bdc);0;2;0;0;0;0;0;0;0;0;0;
 ;library(dplyr);0;5;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;data <- data %>% filter(decimalLatitude != 0) %>% filter(decimalLongitude != 0);0;5;0;0;0;0;0;0;0;0;0;0;0;0;0
 a. Are coordinates placed in correct habitat (sea / land)?;library(coordinateCleaner);0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
-;"sea <- cc_sea(data, lon = 'decimalLongitude', lat = 'decimalLatitude', value = 'flagged'); data <- cbind(data, cap)";0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
+;"sea <- cc_sea(data, lon = 'decimalLongitude', lat = 'decimalLatitude', value = 'flagged'); data <- cbind(data, sea)";0;6;0;0;0;0;0;0;0;0;0;0;0;0;0
 b. Are coordinates placed in the country assigned?;library(sf) # Point in polygon analysis;0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;# Upload dataframe with occurrences (occData) and shapefile of administrative units (countriesSHP);0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
 ;datapoints  <- st_as_sf(x = occData, coords = c('decimalLongitude', 'decimalLatitude'), crs = '+proj=longlat +datum=WGS84 +no_defs');0;7;0;0;0;0;0;0;0;0;0;0;0;0;0
@@ -81,7 +81,7 @@ Recorder Name: TRUE;library(coordinateCleaner);0;0;0;0;0;0;1;0;0;0;0;0;0;0;0
 Recorder Name: TRUE;dataDuplic <- cc_dupl (data, lon = 'decimalLongitude',  lat = 'decimalLatitude', additions = c('recordedBy', 'eventDate'));0;0;0;0;0;0;1;0;0;0;0;0;0;0;0
 Dont filter by Basis of Record;;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0
 Preserved Specimens;library(dplyr);0;0;0;0;0;0;0;0;0;0;0;2;0;0;0
-Preserved Specimens;data <- data %>% filter(basisOfRecord == 'preservedSpecimen');0;0;0;0;0;0;0;0;0;0;0;2;0;0;0
+Preserved Specimens;data <- data %>% filter(basisOfRecord == 'PreservedSpecimen');0;0;0;0;0;0;0;0;0;0;0;2;0;0;0
 Observations;library(dplyr);0;0;0;0;0;0;0;0;0;0;0;3;0;0;0
 Observations;data <- data %>% filter(basisOfRecord == 'Observation' |basisOfRecord == 'HumanObservation' );0;0;0;0;0;0;0;0;0;0;0;3;0;0;0
 Preserved Specimens and Observations;library(dplyr);0;0;0;0;0;0;0;0;0;0;0;4;0;0;0
