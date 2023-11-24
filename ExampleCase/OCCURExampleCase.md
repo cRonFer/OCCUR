@@ -1,18 +1,10 @@
----
-title: "Example Case to use the information provided in OCCUR"
+"Example Case to use the information provided in OCCUR"
 
-output: 
-  html_document:
-    keep_md: true
----
 
 The following script contains basic steps for cleaning and filtering biodiversity records after the downloading process. It is organised by module as it is shown in OCCUR.
 
 Important: These example filters GBIF records of three species of mosses from Spain and Portugal and keep only those that are placed in Portugal
 
-```{.r .klippy}
-klippy::klippy(position = c('top', 'right'), color = 'darkred')
-```
 
 ### Load packages
 
