@@ -10,12 +10,8 @@ The following script contains basic steps for cleaning and filtering biodiversit
 
 Important: These example filters GBIF records of three species of mosses from Spain and Portugal and keep only those that are placed in Portugal
 
-
-```{=html}
-<script>
-  addClassKlippyTo("pre.r, pre.markdown");
-  addKlippy('right', 'top', '#8B0000', '1', 'Copy code', 'Copied!');
-</script>
+```{.r .klippy}
+klippy::klippy(position = c('top', 'right'), color = 'darkred')
 ```
 
 ### Load packages
