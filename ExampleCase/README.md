@@ -8,7 +8,7 @@ To run the example please download the dataset and also the RCode script 'Proces
 This example filters records placed in Portugal, for this reason, it will be necessary to download a polygon shapefile (geopackage) of 
 Portugal (Go to https://gadm.org/download_country.html set Portugal and download the gpkg file).
 
-****************************************************************************************************************************************************
+***
 Example Case to use the information provided in OCCUR
 
 
